@@ -5,52 +5,45 @@
     <head>
 	  <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <meta name="Vikkey" content="Vivek Gupta & IoTMonk">
-	  <meta http-equiv="Access-Control-Allow-Origin" content="*">
-     
-	 <!-- If you are opening this page from local machine, uncomment belwo line -->
-       
-	  <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>  -->
-	  
-	 
-	 <!-- If you are opening this page from a web hosting server machine, uncomment belwo line -->
-	  <script type="text/javascript">
-		document.write([
-			"\<script src='",
-			("https:" == document.location.protocol) ? "https://" : "http://",
-			"ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js' type='text/javascript'>\<\/script>" 
-		].join(''));
-	  </script>  
-	
+      <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    
 	<script>
 		window.onload = function() {
             loaddata();
         };
-		function loaddata(){
-                //------------------URL FOR LOCALHOST-------------
-                // var url = "read_all.php";
-				//------------------URL FOR WEB HOSTING SERVER-------------
-                var url = "https://myluxmeter.000webhostapp.com/myapp/read_all.php";
-				$.getJSON(url, function(data) {
-                    var val= data;
-                    var luxindoor= (data['luxindoor'][0]['lux']);
-                    var dateindoor= (data['luxindoor'][0]['date']);
-                    document.getElementById("luxindoor").innerHTML = "<img src = 'room.svg' height=\"60px\" width=\"60px\" style='vertical-align: middle' />  "+luxindoor + " lux" + " " +dateindoor;
-					//console.log(data['data'][(Object.keys(data['data']).length)-1]['lux']);
-                    var luxoutdoor=(data['luxoutdoor'][0]['lux']);
-                    var dateoutdoor= (data['luxoutdoor'][0]['date']);
-                    document.getElementById("luxoutdoor").innerHTML = "<img src = 'sun.png' height=\"60px\" width=\"60px\" style='vertical-align: middle' />  "+luxoutdoor + " lux" + " " +dateoutdoor;
-					var df = 100*luxindoor/luxoutdoor;
-                    var roundedstring = df.toFixed(4);
-                    var rounded = Number(roundedstring);
-                    document.getElementById("df").innerHTML = "Nilai DF = " + rounded +"%";
+		function loaddata() {
+
+			fetch('read_all.php')
+				.then(
+					function (response) {
+						if (response.status !== 200) {
+							console.log('Looks like there was a problem. Status Code: ' +
+								response.status);
+							return;
+						}
+						// Examine the text in the response
+						response.json().then(function (data) {
+							var luxindoor = (data['luxindoor'][0]['lux']);
+							var dateindoor = (data['luxindoor'][0]['date']);
+							document.getElementById("luxindoor").innerHTML = "<img src = 'room.svg' height=\"60px\" width=\"60px\" style='vertical-align: middle' />  " + luxindoor + " lux" + " " + dateindoor;
+							var luxoutdoor = (data['luxoutdoor'][0]['lux']);
+							var dateoutdoor = (data['luxoutdoor'][0]['date']);
+							document.getElementById("luxoutdoor").innerHTML = "<img src = 'sun.png' height=\"60px\" width=\"60px\" style='vertical-align: middle' />  " + luxoutdoor + " lux" + " " + dateoutdoor;
+							var df = 100 * luxindoor / luxoutdoor;
+							var roundedstring = df.toFixed(4);
+							var rounded = Number(roundedstring);
+							document.getElementById("df").innerHTML = "Nilai DF = " + rounded + "%";
+						});
+					}
+				)
+				.catch(function (err) {
+					console.log('Fetch Error :-S', err);
 				});
-            
-        }
-        window.setInterval(function(){
-        loaddata();
-            }, 500);
-	
+		}
+		window.setInterval(function () {
+			loaddata();
+		}, 300);
+
 	</script>
 	 
       <title>Daylight Strength Meter Display</title>
@@ -105,7 +98,7 @@
         <h1 style="font-family: Helvetica;color: black;">Daylight Strength Meter Display</h1>
     </center>
      <center>
-        <p><a href='https://myluxmeter.000webhostapp.com/myapp/grid-plot.php'>Click here</a> to do df mapping</p>
+        <p><a href='grid-plot.php'>Click here</a> to do df mapping</p>
     </center>
 	<div class="center">
 	   <div align="center" class="form">
@@ -119,9 +112,6 @@
             </p>
             <br>
             <p style = 'line-height: 60px;font-family: Helvetica;color: #fff; font-size: 35px;' id="df">DF 00.00</p>
-            <!-- <p style = 'line-height: 60px;font-family: Helvetica;color: #fff;font-size: 50px;' id="humidity">
-                <img src = 'humidity.png' height="60px" width="60px" style='vertical-align: middle' /> 00.00
-            </p> -->
         </div>
 	</div>
 	
